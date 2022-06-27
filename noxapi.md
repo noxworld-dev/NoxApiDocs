@@ -7,7 +7,9 @@ You also can execute Lua commands via Nox console at any time by simply typing `
 
 ### Client 
 
-`require 'Nox.Client'`
+```
+require 'Nox.Client'
+```
 Incapsulates every function that is related to client interface / game client.
 A client-side mod can: 
 * iterate players in a current match;
@@ -26,7 +28,9 @@ Client (static) -> CreateWindow(), DestroyWindow()
 
 ### Server
 
-`require 'Nox.Server'`
+```
+require 'Nox.Server'
+```
 Contains everything that is related to the server side and game state processing.
 A server-side mod can: 
 * iterate players in a current match, ban or kick them;
@@ -46,7 +50,9 @@ Server -> Ban(), Kick(), ChangeGameMode(), ChangeMap()
 ```
 ### Files
 
-`require 'Nox.Files'`
+```
+require 'Nox.Files'
+```
 Contains all data and declarations that are required for both client and server mods.
 
 Static classes:
@@ -65,7 +71,9 @@ All custom resources will be automatically unloaded when the mod that added them
 
 ### Common
 
-`require 'Nox.Common'`
+```
+require 'Nox.Common'
+```
 Classes and functions that are shared between both client and server mods.
 
 Static classes:
@@ -77,7 +85,9 @@ Log -> Printf(), PrintfColor()
 
 ### Common event handlers
 
-`require 'Nox.Common'`
+```
+require 'Nox.Common'
+```
 Any mod can register an event handler to listen for in-game events.
 
 Basic event bus example:
