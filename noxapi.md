@@ -1,13 +1,13 @@
+## Nox Lua Modding Api (NoxApi)
 
-Nox Lua Modding Api (NoxApi)
-===
 Draft version of the modding API docs for OpenNox.
 
-API structure
----
-Namespaces
----
+The entire API is split into four major namespaces, which can be requested by the mods in runtime.
+You also can execute Lua commands via Nox console at any time by simply typing `$ command`
+
 ### Client 
+
+`require 'Nox.Client'`
 Incapsulates every function that is related to client interface / game client.
 A client-side mod can: 
 * iterate players in a current match;
@@ -19,17 +19,15 @@ A client-side mod can:
 
 Classes:
 ```
-State
-GameWindow
-Renderer
-Music
-ClientObject/Entity/Sprite
-ClientWorld/Map
-PlayerSaveData
-Player (read-only access for client)
+CliObject -> GetThingDef(), .x, .y etc.
+Window -> AddEvent(), .x, .y, .w, .h
+Client (static) -> CreateWindow(), DestroyWindow()
 ```
+
 ### Server
-Hosts everything that is related to the server side and game state processing.
+
+`require 'Nox.Server'`
+Contains everything that is related to the server side and game state processing.
 A server-side mod can: 
 * iterate players in a current match, ban or kick them;
 * iterate, create and delete teams in MP game, move players between them;
@@ -40,36 +38,100 @@ A server-side mod can:
 * modify state of any player in the game, teleport them, force them into or out of the observer mode;
 * iterate mods that are installed on any client that joins this server, and send custom messages to the clients.
 
-Classes:
+Static classes:
 ```
-State
-Match/MatchRules
-Object/Entity
-World/Map
-Player
+Map -> GetInfo(), CreateObject(), GetObject(), GetWaypoint(), GetWall(), MakeSound() etc.
+Object -> CheckClass(), Move(), Delete(), DeleteDecay() 
+Server -> Ban(), Kick(), ChangeGameMode(), ChangeMap()
 ```
+### Files
+
+`require 'Nox.Files'`
+Contains all data and declarations that are required for both client and server mods.
+
+Static classes:
+```
+ThingDb -> GetThingDef(), ThingDef, SpellDef etc.
+VideoBag -> RegisterImage(), GetImage()
+AudioBag -> RegisterSound(), GetSound()
+Modifier -> RegisterModifier(), GetModifier()
+Buffs -> 
+Spells ->
+Abilities ->
+```
+
+All custom resources will be automatically unloaded when the mod that added them is unloaded.
+
+
 ### Common
-Hosts all data that is required for both client and server mods.
 
-Classes:
+`require 'Nox.Common'`
+Classes and functions that are shared between both client and server mods.
+
+Static classes:
 ```
-Environment (no filesystem access)
-Constants
-DataStorage
-ItemModifier
-MonsterData
-ImageData
-SoundData
-ThingData
-Team
-Connection (different for client and server, used for communication between mods)
+Match -> GetPlayers(), GetTeams(), GetPlayerByName(), GetPlayerById() etc.
+Math -> BitAnd(), BitOr(), BitXor(), Distance(), DistanceSq()
+Log -> Printf(), PrintfColor()
 ```
 
-Mod Structure and lifecycle
----
+### Common event handlers
+
+`require 'Nox.Common'`
+Any mod can register an event handler to listen for in-game events.
+
+Basic event bus example:
+```
+event=1
+event=function() print("Match ended!") UnregisterEvent(event) end
+RegisterEvent("MapLoaded", event)
+```
+
+List of all events:
+```
+PlayerLeave(PlayerId)
+PlayerJoin(PlayerId)
+PlayerObserverChange(PlayerId, NewObsState)
+PlayerDie(Player)
+PlayerChat(Player, Text)
+FrameTick()
+MatchEnded()
+MapLoaded(MapName)
+TeamJoined(Player, Team)
+TeamLeft(Player, Team)
+TeamCreated(Team)
+TeamDeleted(Team)
+```
+
+Server specific events:
+```
+NativeScriptRun(ScriptName)
+```
+
+All events on the bus will be automatically unloaded when the mod that added them is unloaded.
+
+You can register sub-events for specific in-game objects (like OnCollide() for Objects)
+These sub-events also have no need to be cleaned up manually, the scripting engine manages them on its own.
+
+
+### Lifetime of classes
+
+Some classes (like Player, Object) are declared invalid upon certain events or in-game circumstances.
+For example, when a Player leaves the server, all corresponding objects that are linked to this Player will be declared invalid, and any call to any property of such class will raise an error.
+You can check the validity of any such class at any time by calling .IsValid() or .valid method or property.
+Lifetime of such classes is kept internally tracked by the scripting engine by assigning a GUID for each instance of created object and listening to the destruction events (PlayerLeave for Players for example).
+Whenever any method of such class is called, its GUID is tested against the database of known active GUIDs.
+If GUID wasn't found in the database, the given class instance counts as expired.
+
+### Mod Structure and lifecycle
+
 Each mod is thought of as a Zip file, that contains: 
-* text manifest that describes the specified mod;
+* .yaml manifest that describes the specified mod;
 * one or more Lua files that modify the game's logic;
 * probably some external resources, like images and music.
+
+### TODO:
+
+Server-to-client network pipes for custom data?
 
 
