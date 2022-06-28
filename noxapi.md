@@ -3,7 +3,7 @@
 Draft version of the modding API docs for OpenNox.
 
 The entire API is split into four major namespaces, which can be requested by the mods in runtime.
-You also can execute Lua commands via Nox console at any time by simply typing `$ command`
+You can also execute Lua commands via Nox console at any time by simply typing `$ command`.
 
 ### Client 
 
@@ -54,6 +54,7 @@ Server -> Ban(), Kick(), ChangeGameMode(), ChangeMap()
 require 'Nox.Files'
 ```
 Contains all data and declarations that are required for both client and server mods.
+Some may be unavailable in headless server mode.
 
 Static classes:
 ```
@@ -83,39 +84,18 @@ Math -> BitAnd(), BitOr(), BitXor(), Distance(), DistanceSq()
 Log -> Printf(), PrintfColor()
 ```
 
-### Common event handlers
+### Event handlers
 
 ```
-require 'Nox.Common'
+require 'Nox.Events'
 ```
-Any mod can register an event handler to listen for in-game events.
+Any mod can register an event handler to listen for [in-game events](events.md).
 
 Basic event bus example:
 ```
 event=1
 event=function() print("Match ended!") UnregisterEvent(event) end
 RegisterEvent("MapLoaded", event)
-```
-
-List of all events:
-```
-PlayerLeave(PlayerId)
-PlayerJoin(PlayerId)
-PlayerObserverChange(PlayerId, NewObsState)
-PlayerDie(Player)
-PlayerChat(Player, Text)
-FrameTick()
-MatchEnded()
-MapLoaded(MapName)
-TeamJoined(Player, Team)
-TeamLeft(Player, Team)
-TeamCreated(Team)
-TeamDeleted(Team)
-```
-
-Server specific events:
-```
-NativeScriptRun(ScriptName)
 ```
 
 All events on the bus will be automatically unloaded when the mod that added them is unloaded.
@@ -126,7 +106,7 @@ These sub-events also have no need to be cleaned up manually, the scripting engi
 
 ### Lifetime of classes
 
-Some classes (like Player, Object) are declared invalid upon certain events or in-game circumstances.
+Some classes (like Player, Object) are declared invalid ("expired") upon certain events or in-game circumstances.
 For example, when a Player leaves the server, all corresponding objects that are linked to this Player will be declared invalid, and any call to any property of such class will raise an error.
 You can check the validity of any such class at any time by calling .IsValid() or .valid method or property.
 Lifetime of such classes is kept internally tracked by the scripting engine by assigning a GUID for each instance of created object and listening to the destruction events (PlayerLeave for Players for example).
@@ -134,6 +114,8 @@ Whenever any method of such class is called, its GUID is tested against the data
 If GUID wasn't found in the database, the given class instance counts as expired.
 
 ### Mod Structure and lifecycle
+
+See [mod file structure](mod-yaml.md).
 
 Each mod is thought of as a Zip file, that contains: 
 * .yaml manifest that describes the specified mod;
