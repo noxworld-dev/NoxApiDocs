@@ -1,3 +1,4 @@
+[Back to main page](README.md)
 ## Nox Lua Modding Api (NoxApi)
 ### Events
 
@@ -18,6 +19,7 @@ List of events available to all mods (client and server):
 PlayerLeave(PlayerId)
 PlayerJoin(PlayerId)
 PlayerDie(Player)
+ScoreChanged(Player, Team, NewScore, OldScore)
 PlayerChat(Player, Text)
 FrameTick()
 MatchEnded()

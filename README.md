@@ -15,7 +15,7 @@ A client-side mod can:
 * iterate players in a current match;
 * capture custom signals from another server mod on a network bus;
 * capture, process and block key and mouse events;
-* capture some critical events, like MapChange, PlayerJoinServer, PlayerLeaveServer, PlayerDie;
+* capture some critical events, like MapLoaded, PlayerJoin, PlayerLeave, PlayerDie;
 * display some useful info on the screen, play sounds;
 * load custom resources like images and sounds. 
 
@@ -38,7 +38,7 @@ A server-side mod can:
 * override the current game rules, change lesson limit;
 * change the current game mode or the map, iterate all maps' names;
 * fully manipulate objects/entities in the game world;
-* capture, process and block all in-game events, for example, OnScriptCalled, OnScoreChanged, OnTeamJoin;
+* capture, process and block all in-game events, for example, NativeScriptRun, ScoreChanged, JoinedTeam;
 * modify state of any player in the game, teleport them, force them into or out of the observer mode;
 * iterate mods that are installed on any client that joins this server, and send custom messages to the clients.
 
@@ -94,7 +94,7 @@ Any mod can register an event handler to listen for [in-game events](events.md).
 Basic event bus example:
 ```
 event=1
-event=function() print("Match ended!") UnregisterEvent(event) end
+event=function() print("New map loaded!") UnregisterEvent(event) end
 RegisterEvent("MapLoaded", event)
 ```
 
