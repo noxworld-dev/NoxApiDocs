@@ -2,7 +2,7 @@
 
 Draft version of the modding API docs for OpenNox.
 
-The entire API is split into four major namespaces, which can be requested by the mods in runtime.
+The entire API is split into five major namespaces, which can be requested by the mods in runtime.
 You can also execute Lua commands via Nox console at any time by simply typing `$ command`.
 
 ### Client 
@@ -48,10 +48,10 @@ Map -> GetInfo(), CreateObject(), GetObject(), GetWaypoint(), GetWall(), MakeSou
 Object -> CheckClass(), Move(), Delete(), DeleteDecay() 
 Server -> Ban(), Kick(), ChangeGameMode(), ChangeMap()
 ```
-### Files
+### Media
 
 ```
-require 'Nox.Files'
+require 'Nox.Media'
 ```
 Contains all data and declarations that are required for both client and server mods.
 Some may be unavailable in headless server mode.
@@ -59,12 +59,8 @@ Some may be unavailable in headless server mode.
 Static classes:
 ```
 ThingDb -> GetThingDef(), ThingDef, SpellDef etc.
-VideoBag -> RegisterImage(), GetImage()
-AudioBag -> RegisterSound(), GetSound()
-Modifier -> RegisterModifier(), GetModifier()
-Buffs -> 
-Spells ->
-Abilities ->
+VideoDb -> RegisterImage(), GetImage()
+AudioDb -> RegisterSound(), GetSound()
 ```
 
 All custom resources will be automatically unloaded when the mod that added them is unloaded.
@@ -82,6 +78,10 @@ Static classes:
 Match -> GetPlayers(), GetTeams(), GetPlayerByName(), GetPlayerById() etc.
 Math -> BitAnd(), BitOr(), BitXor(), Distance(), DistanceSq()
 Log -> Printf(), PrintfColor()
+Modifier -> RegisterModifier(), GetModifier()
+Buffs -> 
+Spells ->
+Abilities ->
 ```
 
 ### Event handlers
